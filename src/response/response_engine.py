@@ -74,11 +74,11 @@ class ResponseEngine:
         
         # Multi-factor risk calculation
         risk_score = (
-            base_severity * 0.4 +  # Threat type
-            anomaly_score * 100 * 0.2 +  # Anomaly detection
-            classification_confidence * 100 * 0.2 +  # Classification confidence
-            asset_criticality * 10 * 0.1 +  # Asset value
-            user_risk_score * 10 * 0.1  # User risk profile
+            base_severity * 0.5 +  # Increased weight for Threat Type (was 0.4)
+            anomaly_score * 100 * 0.2 +  # Anomaly detection (20%)
+            classification_confidence * 100 * 0.2 +  # Classification confidence (20%)
+            asset_criticality * 10 * 0.05 +  # Asset value (5%)
+            user_risk_score * 10 * 0.05  # User risk profile (5%)
         )
         
         # Clamp to 0-100
