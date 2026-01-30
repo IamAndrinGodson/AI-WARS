@@ -763,12 +763,12 @@ async def simulate_attack(request: SimulationRequest, background_tasks: Backgrou
             
             detections.append(detection)
             
-            # Execute response in background - include source for proper filtering
+            # Execute response in background - include source and severity for proper filtering and email alerts
             background_tasks.add_task(
                 execute_response,
                 detection['threat_id'],
                 risk_assessment,
-                {**attack_events[i], 'threat_class': final_threat_class, 'source': 'simulation'}
+                {**attack_events[i], 'threat_class': final_threat_class, 'source': 'simulation', 'severity': risk_assessment['severity']}
             )
         
         return {
@@ -1206,7 +1206,7 @@ def init_network_monitor():
                         response_engine.execute_response(
                             result['threat_id'],
                             risk_assessment,
-                            {**events[i], 'threat_class': threat_classes[i], 'source': 'realtime'}, # Ensure source is passed
+                            {**events[i], 'threat_class': threat_classes[i], 'source': 'realtime', 'severity': risk_assessment['severity']}, # Ensure source and severity are passed
                             require_approval=False
                         )
                 except Exception as inner_e:
