@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Threat Detection | Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <h1>ML Threat Detection <span class="badge">Admin</span></h1>
+            </div>
+            <nav class="nav-tabs">
+                <a href="index.html" class="nav-tab">Dashboard</a>
+                <a href="admin.html" class="nav-tab active">Admin Panel</a>
+            </nav>
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="status-label">System Status</span>
+                    <span id="system-status" class="status-value operational"><i class="fas fa-circle"></i>
+                        Loading...</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Admin Grid -->
+        <div class="admin-grid">
+            <!-- System Status Card -->
+            <div class="card admin-card">
+                <h3><i class="fas fa-server"></i> System Status</h3>
+                <div class="status-grid" id="status-grid">
+                    <div class="status-row">
+                        <span class="label">System</span>
+                        <span class="value" id="status-system">Loading...</span>
+                    </div>
+                    <div class="status-row">
+                        <span class="label">Anomaly Detector</span>
+                        <span class="value" id="status-anomaly">Loading...</span>
+                    </div>
+                    <div class="status-row">
+                        <span class="label">Threat Classifier</span>
+                        <span class="value" id="status-classifier">Loading...</span>
+                    </div>
+                    <div class="status-row">
+                        <span class="label">Feature Engineer</span>
+                        <span class="value" id="status-features">Loading...</span>
+                    </div>
+                    <div class="status-row">
+                        <span class="label">Response Engine</span>
+                        <span class="value" id="status-response">Loading...</span>
+                    </div>
+                    <div class="status-row">
+                        <span class="label">Total Actions</span>
+                        <span class="value" id="status-total-actions">0</span>
+                    </div>
+                    <div class="status-row">
+                        <span class="label">Blocked IPs</span>
+                        <span class="value" id="status-blocked-count">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuration Card -->
+            <div class="card admin-card">
+                <h3><i class="fas fa-cog"></i> Configuration</h3>
+                <div class="config-form">
+                    <div class="config-row">
+                        <span class="label">Automation Enabled</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="automation-toggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="config-row">
+                        <span class="label">Approval Threshold</span>
+                        <input type="number" id="threshold-input" class="threshold-input" value="80" min="0" max="100">
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 8px;">
+                        <button id="save-config-btn" class="btn-save">
+                            <i class="fas fa-save"></i> Save Configuration
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blocked IPs Card -->
+            <div class="card admin-card">
+                <h3><i class="fas fa-ban"></i> Blocked IPs</h3>
+                <div class="blocked-list" id="blocked-list">
+                    <div class="empty-state">
+                        <i class="fas fa-check-circle"></i>
+                        <p>No blocked IPs</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attack Simulation Card -->
+            <div class="card admin-card simulation-card">
+                <h3><i class="fas fa-flask"></i> Quick Attack Simulation</h3>
+                <div class="simulation-controls">
+                    <div class="control-group">
+                        <label for="admin-attack-type">Attack Type</label>
+                        <select id="admin-attack-type">
+                            <option value="ddos">DDoS Attack</option>
+                            <option value="port_scan">Port Scan</option>
+                            <option value="brute_force">Brute Force</option>
+                            <option value="sql_injection">SQL Injection</option>
+                            <option value="data_exfiltration">Data Exfiltration</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="admin-intensity">Intensity: <span id="admin-intensity-value">5</span></label>
+                        <input type="range" id="admin-intensity" min="1" max="10" value="5">
+                    </div>
+                </div>
+                <div style="margin-top: 16px; display: flex; gap: 12px;">
+                    <button id="admin-simulate-btn" class="btn-simulate">
+                        <i class="fas fa-play"></i> Run Simulation
+                    </button>
+                    <button id="clear-history-btn" class="btn-danger">
+                        <i class="fas fa-trash"></i> Clear History
+                    </button>
+                </div>
+                <div id="admin-simulation-result" class="simulation-result hidden"></div>
+            </div>
+        </div>
+
+        <!-- API Endpoints Reference -->
+        <div class="card admin-card">
+            <h3><i class="fas fa-code"></i> API Endpoints Reference</h3>
+            <div class="status-grid">
+                <div class="status-row">
+                    <span class="label">Health Check</span>
+                    <span class="value" style="font-family: monospace;">GET /health</span>
+                </div>
+                <div class="status-row">
+                    <span class="label">Detect Threats</span>
+                    <span class="value" style="font-family: monospace;">POST /detect</span>
+                </div>
+                <div class="status-row">
+                    <span class="label">Simulate Attack</span>
+                    <span class="value" style="font-family: monospace;">POST /api/simulate</span>
+                </div>
+                <div class="status-row">
+                    <span class="label">Dashboard Stats</span>
+                    <span class="value" style="font-family: monospace;">GET /api/stats/detailed</span>
+                </div>
+                <div class="status-row">
+                    <span class="label">History</span>
+                    <span class="value" style="font-family: monospace;">GET /api/history/detailed</span>
+                </div>
+                <div class="status-row">
+                    <span class="label">System Status</span>
+                    <span class="value" style="font-family: monospace;">GET /api/admin/system-status</span>
+                </div>
+                <div class="status-row">
+                    <span class="label">Blocked IPs</span>
+                    <span class="value" style="font-family: monospace;">GET /api/admin/blocked-ips</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+
+</html>

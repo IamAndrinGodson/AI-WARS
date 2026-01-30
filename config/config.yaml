@@ -1,0 +1,306 @@
+# ML Threat Detection System Configuration
+
+# System Settings
+system:
+  name: "ML-ThreatDetect-v1"
+  environment: "development"  # development, staging, production
+  log_level: "INFO"
+  timezone: "UTC"
+
+# Data Pipeline Configuration
+data_pipeline:
+  collectors:
+    netflow:
+      enabled: true
+      host: "0.0.0.0"
+      port: 2055
+      protocol: "UDP"
+      buffer_size: 65535
+    
+    sflow:
+      enabled: true
+      host: "0.0.0.0"
+      port: 6343
+    
+    siem_integration:
+      enabled: true
+      type: "splunk"  # splunk, elasticsearch, qradar
+      host: "siem.example.com"
+      port: 8089
+      api_key: "${SIEM_API_KEY}"
+    
+    packet_capture:
+      enabled: false  # CPU intensive
+      interface: "eth0"
+      filter: "tcp or udp"
+  
+  storage:
+    data_lake:
+      type: "elasticsearch"  # elasticsearch, s3, hdfs
+      hosts: ["localhost:9200"]
+      index_pattern: "threat-detection-{yyyy.MM.dd}"
+      retention_days: 90
+    
+    raw_data:
+      path: "data/raw"
+      format: "parquet"
+      compression: "snappy"
+    
+    processed_data:
+      path: "data/processed"
+      format: "parquet"
+  
+  processing:
+    batch_size: 10000
+    window_size: 300  # seconds
+    num_workers: 4
+    streaming_enabled: true
+
+# Feature Engineering
+features:
+  network:
+    - packet_count
+    - byte_count
+    - duration
+    - packets_per_second
+    - bytes_per_second
+    - protocol_distribution
+    - port_entropy
+    - connection_patterns
+    - packet_size_variance
+  
+  user_behavior:
+    - login_frequency
+    - access_patterns
+    - resource_usage
+    - data_transfer_volume
+    - unusual_time_access
+    - geographic_anomalies
+  
+  temporal:
+    - hourly_patterns
+    - daily_patterns
+    - weekly_patterns
+    - sequence_analysis
+  
+  contextual:
+    - geolocation
+    - device_fingerprint
+    - business_context
+    - asset_criticality
+
+# Model Configuration
+models:
+  anomaly_detection:
+    isolation_forest:
+      n_estimators: 200
+      max_samples: 256
+      contamination: 0.01
+      random_state: 42
+    
+    autoencoder:
+      encoding_dim: 32
+      hidden_layers: [128, 64, 32]
+      activation: "relu"
+      loss: "mse"
+      epochs: 100
+      batch_size: 256
+    
+    lstm:
+      units: 64
+      sequence_length: 50
+      dropout: 0.2
+      recurrent_dropout: 0.2
+      epochs: 50
+  
+  classification:
+    ensemble:
+      - xgboost
+      - lightgbm
+      - random_forest
+    
+    xgboost:
+      max_depth: 7
+      learning_rate: 0.1
+      n_estimators: 200
+      objective: "multi:softmax"
+    
+    lightgbm:
+      num_leaves: 31
+      learning_rate: 0.05
+      n_estimators: 200
+  
+  gnn:
+    hidden_channels: 64
+    num_layers: 3
+    dropout: 0.3
+    learning_rate: 0.001
+
+# Baseline & Thresholds
+baselines:
+  training_period_days: 28
+  update_frequency_hours: 24
+  min_samples: 10000
+  
+  thresholds:
+    anomaly_score: 0.8
+    classification_confidence: 0.7
+    risk_score: 75  # out of 100
+    
+  zones:
+    - name: "dmz"
+      sensitivity: "high"
+      threshold_multiplier: 0.8
+    
+    - name: "internal"
+      sensitivity: "medium"
+      threshold_multiplier: 1.0
+    
+    - name: "critical"
+      sensitivity: "very_high"
+      threshold_multiplier: 0.6
+
+# Detection Rules
+detection:
+  zero_day:
+    enabled: true
+    behavior_divergence_threshold: 0.9
+    min_correlation_events: 3
+  
+  false_positive_reduction:
+    maintenance_windows: true
+    change_management_integration: true
+    confidence_threshold: 0.75
+  
+  alert_correlation:
+    time_window_seconds: 300
+    min_events: 2
+
+# Response & Orchestration
+response:
+  automation:
+    enabled: true
+    require_approval_threshold: 80  # risk score
+  
+  actions:
+    monitor:
+      risk_score_range: [0, 40]
+      action: "monitor"
+    
+    alert:
+      risk_score_range: [41, 60]
+      action: "alert"
+      notify: ["security_team"]
+    
+    isolate:
+      risk_score_range: [61, 80]
+      action: "isolate"
+      require_approval: false
+    
+    block:
+      risk_score_range: [81, 100]
+      action: "block"
+      require_approval: true
+  
+  soar_integration:
+    enabled: true
+    platform: "phantom"  # phantom, demisto, splunk_soar
+    endpoint: "https://soar.example.com/api"
+    api_key: "${SOAR_API_KEY}"
+
+# Advanced Features
+advanced:
+  deception:
+    honeypots:
+      enabled: true
+      count: 5
+      types: ["ssh", "rdp", "http", "database"]
+      auto_deploy: true
+  
+  federated_learning:
+    enabled: false
+    aggregation_server: "https://fl.example.com"
+    privacy_budget: 10.0
+    differential_privacy: true
+  
+  adversarial_testing:
+    enabled: true
+    test_frequency_days: 7
+    evasion_techniques: ["fgsm", "pgd", "carlini"]
+  
+  threat_intelligence:
+    feeds:
+      - name: "misp"
+        url: "https://misp.example.com"
+        enabled: true
+      
+      - name: "alienvault"
+        url: "https://otx.alienvault.com"
+        enabled: true
+    
+    prediction:
+      enabled: true
+      forecast_horizon_days: 30
+
+# API Configuration
+api:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+  cors_origins: ["*"]
+  rate_limit: "100/minute"
+  
+  authentication:
+    enabled: true
+    method: "jwt"  # jwt, oauth2, api_key
+    secret_key: "${JWT_SECRET_KEY}"
+    token_expire_minutes: 60
+
+# Monitoring & Metrics
+monitoring:
+  prometheus:
+    enabled: true
+    port: 9090
+  
+  grafana:
+    enabled: true
+    port: 3000
+  
+  metrics:
+    - model_accuracy
+    - detection_latency
+    - false_positive_rate
+    - true_positive_rate
+    - throughput
+    - resource_usage
+
+# Compliance & Audit
+compliance:
+  gdpr:
+    enabled: true
+    data_retention_days: 90
+    anonymization: true
+  
+  audit_logging:
+    enabled: true
+    log_path: "logs/audit"
+    retention_days: 365
+  
+  encryption:
+    at_rest: true
+    in_transit: true
+    algorithm: "AES-256-GCM"
+
+# Continuous Learning
+continuous_learning:
+  enabled: true
+  retrain_frequency_hours: 168  # weekly
+  
+  triggers:
+    concept_drift_threshold: 0.15
+    performance_degradation_threshold: 0.1
+  
+  model_versioning:
+    enabled: true
+    max_versions: 10
+    comparison_metrics: ["accuracy", "f1_score", "auc_roc"]

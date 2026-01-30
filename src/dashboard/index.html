@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Threat Detection | SOC Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <h1>Threat Detector using ML<span class="badge">V2.0</span></h1>
+            </div>
+            <nav class="nav-tabs">
+                <a href="index.html" class="nav-tab active">Dashboard</a>
+                <a href="benchmark.html" class="nav-tab">Benchmarks</a>
+                <a href="admin.html" class="nav-tab">Admin Panel</a>
+            </nav>
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="status-label">System Status</span>
+                    <span class="status-value operational"><i class="fas fa-circle"></i> Operational</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Last Updated</span>
+                    <span id="last-updated" class="status-value">--:--:--</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+            <div class="card kpi-card">
+                <div class="kpi-icon"><i class="fas fa-search"></i></div>
+                <div class="kpi-content">
+                    <h3>Total Detections</h3>
+                    <p id="total-actions" class="kpi-value">0</p>
+                </div>
+            </div>
+            <div class="card kpi-card danger">
+                <div class="kpi-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="kpi-content">
+                    <h3>High Risk Threats</h3>
+                    <p id="high-risk-count" class="kpi-value">0</p>
+                </div>
+            </div>
+            <div class="card kpi-card warning">
+                <div class="kpi-icon"><i class="fas fa-ban"></i></div>
+                <div class="kpi-content">
+                    <h3>Blocked IPs</h3>
+                    <p id="blocked-count" class="kpi-value">0</p>
+                </div>
+            </div>
+            <div class="card kpi-card success">
+                <div class="kpi-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="kpi-content">
+                    <h3>Monitored Flows</h3>
+                    <p id="monitored-count" class="kpi-value">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mode Toggle Panel -->
+        <div class="card mode-toggle-card">
+            <div class="mode-toggle-header">
+                <h3><i class="fas fa-exchange-alt"></i> Monitoring Mode</h3>
+                <div class="mode-buttons">
+                    <button id="mode-simulation" class="mode-btn active">
+                        <i class="fas fa-flask"></i> Simulation
+                    </button>
+                    <button id="mode-realtime" class="mode-btn">
+                        <i class="fas fa-satellite-dish"></i> Real-Time
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Model Toggle Panel -->
+        <div class="card mode-toggle-card" style="margin-top: 15px;">
+            <div class="mode-toggle-header">
+                <h3><i class="fas fa-brain"></i> AI Model</h3>
+                <div class="mode-buttons">
+                    <button id="model-synthetic" class="mode-btn active" title="Simulated Data Model">
+                        <i class="fas fa-robot"></i> Synthetic
+                    </button>
+                    <button id="model-kdd" class="mode-btn" title="Trained on NSL-KDD">
+                        <i class="fas fa-database"></i> KDD
+                    </button>
+                    <button id="model-cicids" class="mode-btn" title="Trained on CIC-IDS 2017">
+                        <i class="fas fa-network-wired"></i> CIC-IDS
+                    </button>
+                    <button id="model-kmeans" class="mode-btn" title="K-Means Clustering">
+                        <i class="fas fa-project-diagram"></i> K-Means
+                    </button>
+                </div>
+            </div>
+            <div id="model-status-text"
+                style="margin-top: 10px; font-size: 0.8em; color: var(--text-secondary); text-align: right;">
+                Active: Simulated
+            </div>
+        </div>
+
+        <!-- Real-Time Monitoring Panel (hidden by default) -->
+        <div id="realtime-panel" class="card realtime-card hidden">
+            <div class="card-header">
+                <h3><i class="fas fa-satellite-dish"></i> Real-Time Network Monitoring</h3>
+                <span id="realtime-status-badge" class="realtime-badge offline">Stopped</span>
+            </div>
+            <div class="realtime-controls">
+                <div class="realtime-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Connections Scanned</span>
+                        <span id="rt-connections" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Events Processed</span>
+                        <span id="rt-events" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Alerts Generated</span>
+                        <span id="rt-alerts" class="stat-value">0</span>
+                    </div>
+                </div>
+                <div class="realtime-buttons">
+                    <button id="rt-start-btn" class="btn-realtime start">
+                        <i class="fas fa-play"></i> Start Monitoring
+                    </button>
+                    <button id="rt-stop-btn" class="btn-realtime stop" disabled>
+                        <i class="fas fa-stop"></i> Stop
+                    </button>
+                </div>
+            </div>
+            <div id="realtime-alert-feed" class="realtime-alert-feed">
+                <div class="empty-state">
+                    <i class="fas fa-radar"></i>
+                    <p>Start monitoring to see real-time alerts</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attack Simulation Panel (shown by default) -->
+        <div id="simulation-panel" class="card simulation-card">
+            <div class="card-header">
+                <h3><i class="fas fa-flask"></i> Attack Simulation</h3>
+
+            </div>
+            <div class="simulation-controls">
+                <div class="control-group">
+                    <label for="attack-type">Attack Type</label>
+                    <select id="attack-type">
+                        <option value="ddos">DDoS Attack</option>
+                        <option value="port_scan">Port Scan</option>
+                        <option value="brute_force">Brute Force</option>
+                        <option value="sql_injection">SQL Injection</option>
+                        <option value="data_exfiltration">Data Exfiltration</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="attack-intensity">Intensity: <span id="intensity-value">5</span></label>
+                    <input type="range" id="attack-intensity" min="1" max="10" value="5">
+                </div>
+                <div class="control-group">
+                    <label for="target-ip">Target IP</label>
+                    <input type="text" id="target-ip" value="10.0.0.50" placeholder="Target IP">
+                </div>
+                <button id="simulate-btn" class="btn-simulate">
+                    <i class="fas fa-play"></i> Launch Simulation
+                </button>
+            </div>
+            <div id="simulation-result" class="simulation-result hidden"></div>
+        </div>
+
+        <!-- Charts Section Row 1 -->
+        <div class="charts-grid">
+            <div class="card chart-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-pie"></i> Threat Severity Distribution</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="threatDistributionChart"></canvas>
+                </div>
+            </div>
+            <div class="card chart-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-line"></i> Anomaly Score Trend</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="anomalyTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section Row 2 -->
+        <div class="charts-grid-three">
+            <div class="card chart-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-network-wired"></i> Top Source IPs</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="topIpsChart"></canvas>
+                </div>
+            </div>
+            <div class="card chart-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-server"></i> Targeted Ports</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="portsChart"></canvas>
+                </div>
+            </div>
+            <div class="card chart-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-bug"></i> Actions Distribution</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="actionsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Feed Section -->
+        <div class="card feed-card">
+            <div class="card-header">
+                <h3><i class="fas fa-list"></i> Live Threat Feed</h3>
+            </div>
+            <div class="card-body scrollable">
+                <table class="feed-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Threat ID</th>
+                            <th>Source IP</th>
+                            <th>Destination</th>
+                            <th>Port</th>
+                            <th>Process</th>
+                            <th>Severity</th>
+                            <th>Action</th>
+                            <th>Risk Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feed-body">
+                        <!-- Rows injected via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <footer
+            style="text-align: center; color: var(--text-secondary); margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 20px; font-size: 14px;">
+            <p>A Project by <strong style="color: var(--accent-blue); font-family: monospace;">Team Error404</strong>
+            </p>
+        </footer>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>

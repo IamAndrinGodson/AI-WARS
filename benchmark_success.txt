@@ -1,0 +1,112 @@
+2026-01-30 22:28:25,439 - INFO - Feature engineer state loaded from data/models/feature_engineer.pkl
+2026-01-30 22:28:25,476 - INFO - Model loaded from data/models/anomaly_detector/isolation_forest
+2026-01-30 22:28:25,476 - INFO - Ensemble loaded from data/models/anomaly_detector
+2026-01-30 22:28:25,477 - INFO - Evaluating model: Synthetic on data/kdd_converted.csv...
+2026-01-30 22:28:25,556 - INFO - Extracting features from 22544 records
+2026-01-30 22:28:36,764 - ERROR - Error extracting temporal features: 'user_id'
+2026-01-30 22:28:36,765 - INFO - Extracted 21 features
+C:\Users\Andrin Godson\Documents\ml-threat-detection-system (Copy)\venv\Lib\site-packages\sklearn\utils\validation.py:2684: UserWarning: X has feature names, but StandardScaler was fitted without feature names
+  warnings.warn(
+2026-01-30 22:28:36,914 - INFO - Results for Synthetic: Acc=0.1363, Prec=0.2070, Rec=0.1827, F1=0.1940
+2026-01-30 22:28:36,917 - INFO - Feature engineer state loaded from data/models/real/feature_engineer.pkl
+2026-01-30 22:28:36,952 - INFO - Model loaded from data/models/real/anomaly_detector/isolation_forest
+2026-01-30 22:28:36,952 - INFO - Ensemble loaded from data/models/real/anomaly_detector
+2026-01-30 22:28:36,953 - INFO - Evaluating model: KDD on data/kdd_converted.csv...
+2026-01-30 22:28:37,033 - INFO - Detected legacy model expecting raw features. Using legacy extraction path.
+2026-01-30 22:28:37,052 - ERROR - Inference failed: could not convert string to float: 'tcp'
+Traceback (most recent call last):
+  File "C:\Users\Andrin Godson\Documents\ml-threat-detection-system (Copy)\src\models\benchmark.py", line 123, in evaluate
+    X = fe.scaler.transform(X_df)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrin Godson\Documents\ml-threat-detection-system (Copy)\venv\Lib\site-packages\sklearn\utils\_set_output.py", line 316, in wrapped
+    data_to_wrap = f(self, X, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrin Godson\Documents\ml-threat-detection-system (Copy)\venv\Lib\site-packages\sklearn\preprocessing\_data.py", line 1094, in transform
+    X = validate_data(
+        ^^^^^^^^^^^^^^
+  File "C:\Users\Andrin Godson\Documents\ml-threat-detection-system (Copy)\venv\Lib\site-packages\sklearn\utils\validation.py", line 2902, in validate_data
+    out = check_array(X, input_name="X", **check_params)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrin Godson\Documents\ml-threat-detection-system (Copy)\venv\Lib\site-packages\sklearn\utils\validation.py", line 1022, in check_array
+    array = _asarray_with_order(array, order=order, dtype=dtype, xp=xp)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrin Godson\Documents\ml-threat-detection-system (Copy)\venv\Lib\site-packages\sklearn\utils\_array_api.py", line 878, in _asarray_with_order
+    array = numpy.asarray(array, order=order, dtype=dtype)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrin Godson\Documents\ml-threat-detection-system (Copy)\venv\Lib\site-packages\pandas\core\generic.py", line 2039, in __array__
+    arr = np.asarray(values, dtype=dtype)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: could not convert string to float: 'tcp'
+2026-01-30 22:28:37,155 - INFO - Feature engineer state loaded from data/models/cicids/feature_engineer.pkl
+2026-01-30 22:28:37,186 - INFO - Model loaded from data/models/cicids/anomaly_detector/isolation_forest
+2026-01-30 22:28:37,186 - INFO - Ensemble loaded from data/models/cicids/anomaly_detector
+2026-01-30 22:28:37,187 - INFO - Evaluating model: CIC-IDS on data/cicids_sample.csv...
+2026-01-30 22:28:37,197 - INFO - Extracting features from 5000 records
+2026-01-30 22:28:39,895 - ERROR - Error extracting temporal features: 'user_id'
+2026-01-30 22:28:39,895 - INFO - Extracted 21 features
+2026-01-30 22:28:39,895 - ERROR - Inference failed: The feature names should match those that were passed during fit.
+Feature names unseen at fit time:
+- avg_packet_size
+- byte_count
+- bytes_per_second
+- day_cos
+- day_of_month
+- ...
+Feature names seen at fit time, yet now missing:
+- ACK Flag Count
+- Active Max
+- Active Mean
+- Active Min
+- Active Std
+- ...
+
+Traceback (most recent call last):
+  File "C:\Users\Andrin Godson\Documents\ml-threat-detection-system (Copy)\src\models\benchmark.py", line 131, in evaluate
+    X_df = fe.normalize_features(features, fit=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrin Godson\Documents\ml-threat-detection-system (Copy)\src\features\feature_generator.py", line 308, in normalize_features
+    scaled = self.scaler.transform(features)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrin Godson\Documents\ml-threat-detection-system (Copy)\venv\Lib\site-packages\sklearn\utils\_set_output.py", line 316, in wrapped
+    data_to_wrap = f(self, X, *args, **kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Andrin Godson\Documents\ml-threat-detection-system (Copy)\venv\Lib\site-packages\sklearn\preprocessing\_data.py", line 1094, in transform
+    X = validate_data(
+        ^^^^^^^^^^^^^^
+  File "C:\Users\Andrin Godson\Documents\ml-threat-detection-system (Copy)\venv\Lib\site-packages\sklearn\utils\validation.py", line 2877, in validate_data
+    _check_feature_names(_estimator, X, reset=reset)
+  File "C:\Users\Andrin Godson\Documents\ml-threat-detection-system (Copy)\venv\Lib\site-packages\sklearn\utils\validation.py", line 2729, in _check_feature_names
+    raise ValueError(message)
+ValueError: The feature names should match those that were passed during fit.
+Feature names unseen at fit time:
+- avg_packet_size
+- byte_count
+- bytes_per_second
+- day_cos
+- day_of_month
+- ...
+Feature names seen at fit time, yet now missing:
+- ACK Flag Count
+- Active Max
+- Active Mean
+- Active Min
+- Active Std
+- ...
+
+2026-01-30 22:28:39,898 - INFO - Feature engineer state loaded from data/models/kmeans/feature_engineer.pkl
+2026-01-30 22:28:39,899 - INFO - K-Means model loaded from data/models/kmeans/kmeans_model.pkl
+2026-01-30 22:28:39,899 - INFO - Evaluating model: K-Means on data/kdd_converted.csv...
+2026-01-30 22:28:39,980 - INFO - Extracting features from 22544 records
+2026-01-30 22:28:51,698 - ERROR - Error extracting temporal features: 'user_id'
+2026-01-30 22:28:51,699 - INFO - Extracted 21 features
+2026-01-30 22:28:51,721 - INFO - Results for K-Means: Acc=0.5753, Prec=0.5769, Rec=0.9526, F1=0.7186
+2026-01-30 22:28:51,730 - INFO - Results saved to data/benchmark_results.csv
+
+============================================================
+BENCHMARK RESULTS
+============================================================
+| Model     |   Accuracy |   Precision |   Recall |   F1 Score |   Latency (s) |   Samples |
+|:----------|-----------:|------------:|---------:|-----------:|--------------:|----------:|
+| Synthetic |   0.136311 |    0.206957 | 0.182654 |   0.194048 |       11.3494 |     22544 |
+| K-Means   |   0.575275 |    0.576869 | 0.952622 |   0.718589 |       11.733  |     22544 |
+============================================================

@@ -1,0 +1,128 @@
+# Core ML/DL Libraries
+tensorflow==2.15.0
+torch==2.1.0
+scikit-learn==1.3.2
+xgboost==2.0.2
+lightgbm==4.1.0
+numpy==1.24.3
+pandas==2.1.4
+scipy==1.11.4
+
+# Deep Learning & Neural Networks
+keras==2.15.0
+torch-geometric==2.4.0
+transformers==4.36.0
+
+# Anomaly Detection
+pyod==1.1.2
+hdbscan==0.8.33
+
+# Time Series Analysis
+statsmodels==0.14.1
+prophet==1.1.5
+tslearn==0.6.2
+
+# Graph Analysis
+networkx==3.2.1
+igraph==0.11.3
+
+# Data Processing & Streaming
+kafka-python>=2.0.2
+pyspark==3.5.0
+dask[complete]==2023.12.1
+
+# Feature Engineering
+featuretools==1.29.0
+tsfresh==0.20.2
+category_encoders==2.6.3
+
+# API & Web Framework
+fastapi==0.108.0
+uvicorn==0.25.0
+pydantic==2.5.3
+python-multipart==0.0.6
+
+# Database & Storage
+elasticsearch==8.11.1
+redis==5.0.1
+sqlalchemy==2.0.23
+psycopg2-binary==2.9.9
+pymongo==4.6.1
+
+# Monitoring & Logging
+prometheus-client==0.19.0
+grafana-client==3.5.0
+python-json-logger==2.0.7
+loguru==0.7.2
+
+# Security & Encryption
+cryptography==41.0.7
+pyjwt==2.8.0
+bcrypt==4.1.2
+
+# Model Explainability
+shap==0.44.0
+lime==0.2.0.1
+alibi==0.9.4
+
+# Visualization
+matplotlib==3.8.2
+seaborn==0.13.1
+plotly==5.18.0
+dash==2.14.2
+
+# Testing
+pytest==7.4.3
+pytest-cov==4.1.0
+pytest-asyncio==0.23.2
+faker==21.0.0
+
+# Code Quality
+black==23.12.1
+flake8==7.0.0
+mypy==1.7.1
+pylint==3.0.3
+
+# Configuration
+pyyaml==6.0.1
+python-dotenv==1.0.0
+hydra-core==1.3.2
+
+# Scheduling & Task Queue
+celery==5.3.4
+apscheduler==3.10.4
+
+# HTTP & Networking
+requests==2.31.0
+aiohttp==3.9.1
+httpx==0.26.0
+
+# Data Validation
+cerberus==1.3.5
+marshmallow==3.20.1
+
+# Utilities
+tqdm==4.66.1
+joblib==1.3.2
+click==8.1.7
+rich==13.7.0
+
+# Model Serving
+mlflow==2.9.2
+bentoml==1.1.11
+
+# Privacy & Federated Learning
+opacus==1.4.1
+pysyft==0.8.5
+
+# Adversarial Testing
+adversarial-robustness-toolbox==1.15.1
+foolbox==3.3.3
+
+# Docker & Kubernetes
+docker==7.0.0
+kubernetes==28.1.0
+
+# Documentation
+sphinx==7.2.6
+sphinx-rtd-theme==2.0.0
