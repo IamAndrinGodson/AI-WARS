@@ -499,10 +499,18 @@ def generate_random_ip():
 
 
 def generate_attack_events(attack_type: str, intensity: int, duration_seconds: int, target_ip: str) -> List[Dict]:
-    """Generate simulated attack events based on attack type"""
+    """Generate simulated attack events based on attack type.
+    
+    Enhanced to generate more extreme patterns that trigger HIGH/CRITICAL severity alerts.
+    Higher intensity levels guarantee more severe attack signatures.
+    """
     
     events = []
-    num_events = intensity * 3  # More events for higher intensity
+    # Scale events with intensity - higher intensity = more events and more severe patterns
+    num_events = intensity * 5  # Increased base multiplier
+    
+    # Severity multipliers based on intensity (1-10)
+    severity_multiplier = max(1, intensity ** 2)  # Exponential scaling for extreme values
     
     def get_sim_process(port):
         mapping = {
@@ -514,45 +522,48 @@ def generate_attack_events(attack_type: str, intensity: int, duration_seconds: i
         return mapping.get(port, random.choice(['python', 'java', 'chrome.exe', 'powershell.exe', 'unknown']))
 
     if attack_type == "ddos":
-        # DDoS: Multiple sources, high volume, same target
+        # DDoS: Extreme volume attack - GUARANTEED HIGH/CRITICAL
+        # Multiple sources flooding a single target with massive traffic
         for i in range(num_events):
             dport = random.choice([80, 443, 8080])
             events.append({
                 "timestamp": datetime.now().isoformat(),
-                "src_ip": generate_random_ip(),  # Many different sources
+                "src_ip": generate_random_ip(),  # Many different sources = botnet
                 "dst_ip": target_ip,
                 "src_port": random.randint(1024, 65535),
                 "dst_port": dport,
                 "protocol": 6,  # TCP
-                "packets": random.randint(10000, 100000) * intensity,
-                "bytes": random.randint(5000000, 100000000) * intensity,
-                "flow_duration": random.uniform(0.1, 2.0),  # Short bursts
+                # EXTREME values for DDoS detection
+                "packets": random.randint(500000, 5000000) * severity_multiplier,
+                "bytes": random.randint(100000000, 1000000000) * severity_multiplier,  # 100MB-1GB per flow
+                "flow_duration": random.uniform(0.01, 0.5),  # Very short bursts = suspicious
                 "source": "simulation",
                 "process": get_sim_process(dport)
             })
     
     elif attack_type == "port_scan":
-        # Port Scan: Single source, sequential ports
+        # Port Scan: Rapid sequential port probing - HIGH severity
         src_ip = generate_random_ip()
-        base_port = random.randint(1, 1000)
+        base_port = random.randint(1, 100)
         for i in range(num_events):
-            dport = base_port + (i * random.randint(1, 100))
+            # Sequential ports with very low packets = classic scan signature
+            dport = (base_port + i) % 65535 + 1
             events.append({
                 "timestamp": datetime.now().isoformat(),
-                "src_ip": src_ip,  # Same source
+                "src_ip": src_ip,  # Same source scanning many ports
                 "dst_ip": target_ip,
                 "src_port": random.randint(40000, 60000),
-                "dst_port": dport,  # Sequential or semi-sequential
+                "dst_port": dport,
                 "protocol": 6,
-                "packets": random.randint(1, 5),  # Few packets per port
-                "bytes": random.randint(40, 200),
-                "flow_duration": random.uniform(0.001, 0.1),
+                "packets": 1,  # SYN scan signature - single packet per port
+                "bytes": 40 + random.randint(0, 20),  # Minimal payload
+                "flow_duration": random.uniform(0.0001, 0.01) * (1 / severity_multiplier),  # Sub-millisecond
                 "source": "simulation",
-                "process": "unknown" 
+                "process": "unknown"  # Port scanners don't associate with legit processes
             })
     
     elif attack_type == "brute_force":
-        # Brute Force: Single source, same port (SSH/RDP), many attempts
+        # Brute Force: Rapid authentication attempts - HIGH/CRITICAL
         src_ip = generate_random_ip()
         target_port = random.choice([22, 3389, 21, 23])  # SSH, RDP, FTP, Telnet
         for i in range(num_events):
@@ -563,18 +574,19 @@ def generate_attack_events(attack_type: str, intensity: int, duration_seconds: i
                 "src_port": random.randint(40000, 60000),
                 "dst_port": target_port,
                 "protocol": 6,
-                "packets": random.randint(10, 50),
-                "bytes": random.randint(500, 2000),
-                "flow_duration": random.uniform(0.5, 3.0),
+                "packets": random.randint(50, 200) * severity_multiplier,  # Many auth attempts
+                "bytes": random.randint(5000, 20000) * severity_multiplier,  # Auth payload signatures
+                "flow_duration": random.uniform(0.1, 1.0),  # Rapid attempts
                 "source": "simulation",
                 "process": get_sim_process(target_port)
             })
     
     elif attack_type == "sql_injection":
-        # SQL Injection: HTTP traffic with suspicious patterns
+        # SQL Injection: Suspicious database traffic patterns - HIGH/CRITICAL
         src_ip = generate_random_ip()
         for i in range(num_events):
-            dport = random.choice([80, 443, 8080, 3306])
+            # Target database and web ports
+            dport = random.choice([80, 443, 8080, 3306, 5432, 1433])
             events.append({
                 "timestamp": datetime.now().isoformat(),
                 "src_ip": src_ip,
@@ -582,34 +594,74 @@ def generate_attack_events(attack_type: str, intensity: int, duration_seconds: i
                 "src_port": random.randint(40000, 60000),
                 "dst_port": dport,
                 "protocol": 6,
-                "packets": random.randint(20, 100),
-                "bytes": random.randint(2000, 10000),  # Larger payloads with SQL
-                "flow_duration": random.uniform(1.0, 5.0),
+                "packets": random.randint(100, 500) * severity_multiplier,
+                "bytes": random.randint(50000, 200000) * severity_multiplier,  # Large SQL payloads
+                "flow_duration": random.uniform(0.5, 2.0),  # Multiple queries
                 "source": "simulation",
                 "process": get_sim_process(dport)
             })
     
     elif attack_type == "data_exfiltration":
-        # Data Exfiltration: Large outbound data transfers
-        src_ip = target_ip  # Internal source
+        # Data Exfiltration: Massive outbound data transfers - CRITICAL
+        src_ip = target_ip  # Internal source exfiltrating data
         for i in range(num_events):
-            dport = random.choice([443, 22, 21, 53])
+            dport = random.choice([443, 22, 21, 53, 8443])  # Common exfil ports
+            events.append({
+                "timestamp": datetime.now().isoformat(),
+                "src_ip": src_ip,
+                "dst_ip": generate_random_ip(),  # External destination
+                "src_port": random.randint(40000, 60000),
+                "dst_port": dport,
+                "protocol": 6,
+                "packets": random.randint(50000, 500000) * severity_multiplier,
+                "bytes": random.randint(500000000, 2000000000),  # 500MB-2GB transfers = CRITICAL
+                "flow_duration": random.uniform(30, 120),  # Extended transfer duration
+                "source": "simulation",
+                "process": random.choice(['curl', 'wget', 'powershell.exe', 'python', 'unknown'])
+            })
+    
+    elif attack_type == "ransomware":
+        # NEW: Ransomware-like behavior - CRITICAL
+        src_ip = target_ip  # Internal compromised host
+        for i in range(num_events):
+            # Ransomware communicates on unusual ports and has burst patterns
+            dport = random.choice([4444, 5555, 9001, 6666, 31337])  # Common C2 ports
             events.append({
                 "timestamp": datetime.now().isoformat(),
                 "src_ip": src_ip,
                 "dst_ip": generate_random_ip(),
-                "src_port": random.randint(40000, 60000),
-                "dst_port": dport,  # Common exfil ports
+                "src_port": random.randint(49152, 65535),
+                "dst_port": dport,
                 "protocol": 6,
-                "packets": random.randint(1000, 10000) * intensity,
-                "bytes": random.randint(10000000, 500000000),  # Very large transfers
-                "flow_duration": random.uniform(60, 300),
+                "packets": random.randint(10000, 100000) * severity_multiplier,
+                "bytes": random.randint(10000000, 100000000),
+                "flow_duration": random.uniform(0.5, 5.0),
                 "source": "simulation",
-                "process": get_sim_process(dport)
+                "process": random.choice(['unknown', 'svchost.exe', 'rundll32.exe', 'powershell.exe'])
+            })
+    
+    elif attack_type == "zero_day":
+        # NEW: Zero-day exploit pattern - CRITICAL
+        # Unusual traffic patterns that don't match normal behavior
+        src_ip = generate_random_ip()
+        for i in range(num_events):
+            dport = random.choice([445, 139, 135, 8443, 9090])  # Exploit-prone ports
+            events.append({
+                "timestamp": datetime.now().isoformat(),
+                "src_ip": src_ip,
+                "dst_ip": target_ip,
+                "src_port": random.randint(1024, 5000),  # Low ephemeral = suspicious
+                "dst_port": dport,
+                "protocol": 6,
+                "packets": random.randint(100000, 1000000) * severity_multiplier,
+                "bytes": random.randint(50000000, 500000000),  # Very large payload
+                "flow_duration": random.uniform(0.001, 0.1),  # Extremely fast = exploit
+                "source": "simulation",
+                "process": "unknown"
             })
     
     else:
-        # Generic malicious traffic
+        # Generic malicious traffic - scales with intensity
         for i in range(num_events):
             dport = random.randint(1, 65535)
             events.append({
@@ -619,9 +671,9 @@ def generate_attack_events(attack_type: str, intensity: int, duration_seconds: i
                 "src_port": random.randint(1024, 65535),
                 "dst_port": dport,
                 "protocol": random.choice([6, 17]),
-                "packets": random.randint(100, 10000),
-                "bytes": random.randint(10000, 1000000),
-                "flow_duration": random.uniform(1, 30),
+                "packets": random.randint(10000, 100000) * severity_multiplier,
+                "bytes": random.randint(10000000, 100000000) * severity_multiplier,
+                "flow_duration": random.uniform(0.1, 10),
                 "source": "simulation",
                 "process": get_sim_process(dport)
             })
