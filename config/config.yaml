@@ -208,6 +208,17 @@ response:
     endpoint: "https://soar.example.com/api"
     api_key: "${SOAR_API_KEY}"
 
+  notifications:
+    email:
+      enabled: false
+      smtp_server: "smtp.gmail.com"  # Example: smtp.gmail.com
+      smtp_port: 587
+      use_tls: true
+      sender_email: "spacenature82@gmail.com"
+      sender_password: "fphw lpai yfnm qytn"  # Use environment variable or replace
+      recipients: ["infp4w5thedreamer@gmail.com"]
+      alert_severity: ["high", "critical"]  # Only send for these levels
+
 # Advanced Features
 advanced:
   deception:
