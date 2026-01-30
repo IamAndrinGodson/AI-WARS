@@ -37,6 +37,21 @@ A **complete, production-ready ML-based cybersecurity threat detection system** 
 - Continuous learning pipeline
 - Compliance & audit logging
 
+## 🧠 Solved Complexity & Production Readiness
+
+### Advanced Machine Learning Architecture
+This is not a simple script; it is a complex **Ensemble System** combining:
+- **Deep Learning**: Autoencoders and LSTMs (TensorFlow/Keras) for temporal and reconstruction-based anomaly detection.
+- **Gradient Boosting**: XGBoost and LightGBM for state-of-the-art classification accuracy.
+- **Statistical Profiling**: Behavioral divergence algorithms for Zero-Day detection.
+
+### Enterprise-Grade Infrastructure
+The system is built on a **Microservices-ready** architecture:
+- **Stream Processing**: Apache Kafka & Zookeeper for high-throughput event ingestion.
+- **Distributed Storage**: Elasticsearch for log retention and rapid search.
+- **Caching Layer**: Redis for real-time state management and deduplication.
+- **Monitoring**: Prometheus & Grafana for system health and model metrics.
+
 ## 🏗️ Project Structure
 
 ```

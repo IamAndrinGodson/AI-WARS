@@ -11,6 +11,13 @@ This system implements state-of-the-art ML techniques for:
 - Behavioral analytics (UEBA)
 - Threat intelligence and prediction
 
+## 🎨 UX & Design
+
+The dashboard features a **"Deep Dark" Cyberpunk Aesthetic** designed for modern SOC environments:
+- **Neon Accents**: High-contrast visualizations for immediate attention.
+- **Glassmorphism**: Modern, semi-transparent UI elements.
+- **Dynamic Animations**: Radar pulses and terminal-style feeds for real-time monitoring.
+
 ## 🏗️ Architecture
 
 ```
@@ -131,6 +138,12 @@ API Documentation (Swagger UI) is available at:
 - Attack chain reconstruction
 - Automated tiered responses
 - Explainable AI dashboards
+- **Advanced Simulator**: Built-in engine to simulate attacks:
+  - DDoS & Botnets
+  - Ransomware propagation
+  - Zero-Day exploits
+  - Data Exfiltration
+  - SQL Injection & XSS
 
 ### Phase 4: Production Operations
 - Continuous learning and model retraining
